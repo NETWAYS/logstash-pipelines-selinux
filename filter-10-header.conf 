@@ -1,0 +1,16 @@
+filter {
+  if [log_source] == "selinux" {
+    grok {
+      match => { "message" => "(?<timestamp>%{MONTHDAY} %{MONTH} %{YEAR} %{TIME}) %{WORD:hostname} %{DATA:avc_message}" }
+    }
+    date {
+      match => [ "timestamp", "dd MMM yyyy HH:mm:ss" ]
+    }
+    kv {
+      source => "avc_message"
+      target => "selinux"
+      field_split => " "
+      value_split => "="
+    }
+  }
+}
